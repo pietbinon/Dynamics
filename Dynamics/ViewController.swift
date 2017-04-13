@@ -14,13 +14,26 @@ class ViewController: UIViewController, UICollisionBehaviorDelegate {
     var gravity: UIGravityBehavior!
     var collision: UICollisionBehavior!
     var barrierArray = [UIView]()
+    
+    //To use with the second square created
+    var firstContact = false
+    
+    var square: UIView!
+    var snap: UISnapBehavior!
+    
+    
+    
+    
+    
 
     override func viewDidLoad() {
         
         super.viewDidLoad()
         
         //Square
-        let square = UIView (frame: CGRect (x: 100, y: 0, width: 50, height: 50))
+        //let square = UIView (frame: CGRect (x: 100, y: 0, width: 50, height: 50))
+        
+        square = UIView (frame: CGRect (x: 100, y: 0, width: 50, height: 50))
         square.backgroundColor = UIColor.gray
         view.addSubview (square)
         
@@ -46,11 +59,11 @@ class ViewController: UIViewController, UICollisionBehaviorDelegate {
         barrier5.backgroundColor = UIColor.red
         barrierArray.append(barrier5)
         
-        let barrier6 = UIView (frame: CGRect (x: 170, y: 400 , width: 40, height: 40))
+        let barrier6 = UIView (frame: CGRect (x: 180, y: 400 , width: 40, height: 40))
         barrier6.backgroundColor = UIColor.red
         barrierArray.append(barrier6)
         
-        let barrier7 = UIView (frame: CGRect (x: 90, y: 450 , width: 40, height: 40))
+        let barrier7 = UIView (frame: CGRect (x: 90, y: 480 , width: 40, height: 40))
         barrier7.backgroundColor = UIColor.red
         barrierArray.append(barrier7)
         
@@ -86,13 +99,13 @@ class ViewController: UIViewController, UICollisionBehaviorDelegate {
         var updateCount = 0
         collision.action = {
             if (updateCount % 3 == 0) {
-                let outline = UIView(frame: square.bounds)
-                outline.transform = square.transform
-                outline.center = square.center
+                let outline = UIView(frame: self.square.bounds)
+                outline.transform = self.square.transform
+                outline.center = self.square.center
                 
                 outline.alpha = 0.5
                 outline.backgroundColor = UIColor.clear
-                outline.layer.borderColor = square.layer.presentation()?.backgroundColor
+                outline.layer.borderColor = self.square.layer.presentation()?.backgroundColor
                 outline.layer.borderWidth = 1.0
                 self.view.addSubview(outline)
             }
@@ -158,6 +171,35 @@ class ViewController: UIViewController, UICollisionBehaviorDelegate {
             
             collidingView.backgroundColor = UIColor.gray
         }
+        
+//        //Add a second square
+//        if (!firstContact) {
+//            firstContact = true
+//            
+//            let square = UIView (frame: CGRect(x: 30, y: 0, width: 50, height: 50))
+//            square.backgroundColor = UIColor.gray
+//            view.addSubview (square)
+//            
+//            collision.addItem (square)
+//            gravity.addItem (square)
+//            
+//            let attach = UIAttachmentBehavior (item: collidingView, attachedTo: square)
+//            animator.addBehavior (attach)
+//        }
     }
+    
+    //Creates user interaction
+    func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+        
+        if (snap != nil) {
+            
+            animator.removeBehavior (snap)
+        }
+        
+        let touch = touches.anyObject() as! UITouch
+        snap = UISnapBehavior (item: square, snapTo: touch.location(in: view))
+        animator.addBehavior (snap)
+    }
+
 }
 
